@@ -33,8 +33,6 @@ print(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail(10))
 
 fig1 = m.plot(forecast)
 fig2 = m.plot_components(forecast)
-
 a = add_changepoints_to_plot(fig1.gca(), m, forecast) 
 
 plt.show()
-
