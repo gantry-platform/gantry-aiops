@@ -15,3 +15,8 @@ $ docker push gtno1chun/note-custom-image:1.1.0
 
 ## custom image download URL 
 $ docker pull gtno1chun/base-notebook:1.1.0
+
+
+## local RUN jupy. 
+$ dockr run -p 8888:8888 [customimage:tag]
+http://localhost:8888
