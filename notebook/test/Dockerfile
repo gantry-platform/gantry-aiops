@@ -71,6 +71,7 @@ RUN echo "auth requisite pam_deny.so" >> /etc/pam.d/su && \
     fix-permissions $HOME && \
     fix-permissions $CONDA_DIR
 
+
 USER $NB_UID
 WORKDIR $HOME
 ARG PYTHON_VERSION=default 
@@ -142,15 +143,27 @@ COPY jupyter_notebook_config.py /etc/jupyter/
 # Fix permissions on /etc/jupyter as root
 USER root
 RUN fix-permissions /etc/jupyter/
-RUN echo "${NB_USER}    ALL=NOPASSWD:   ALL" >> /etc/sudoers
+RUN echo "${NB_USER}	ALL=NOPASSWD:	ALL" >> /etc/sudoers
 
 # Switch back to jovyan to avoid accidental container runs as root
 USER $NB_UID
 
 WORKDIR $HOME
 
+
+
+#WORKDIR /home
+## CJB
+#ARG USER="docker"
+#ARG UID="1001"
+#ARG GID="1001"
+#RUN useradd -m ${USER} --uid=${UID} && echo "${USER}:${PW}" | \
+#      chpasswd
+#USER ${UID}:${GID}
+#WORKDIR /home/${USER}
+
+
+
 ENTRYPOINT ["tini", "--"]
 CMD ["sh","-c", "jupyter notebook --notebook-dir=/home/${NB_USER} --ip=0.0.0.0 --no-browser --allow-root --port=8888 --NotebookApp.token='' --NotebookApp.password='' --NotebookApp.allow_origin='*' --NotebookApp.base_url=${NB_PREFIX}"]
-
-
 
