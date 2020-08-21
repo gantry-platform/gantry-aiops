@@ -6,7 +6,7 @@ KUBESPRAY_HOME=$MAIN_HOME/kubespray
 K8S_INVENTORY=$KUBESPRAY_HOME/inventory/prod/group_vars
 KUBEFLOW_HOME=$MAIN_HOME/kubeflow
 
-host_name=inlab
+host_name=inslab
 
 echo "######################################" 
 echo "##  main       home : " $MAIN_HOME
@@ -18,14 +18,14 @@ echo "######################################"
 #rm -rf $MAIN_HOME
 echo "rm -rf /home/inslab/$MAIN_HOME"
 
-
 function make_fold() 
 {
     ## Create install base fold and source clone
     cd
     if [ ! -d $MAIN_HOME ]; then
       mkdir -p $MAIN_HOME
-      cp hosts.yml $MAIN_HOME/.
+      cp ./hosts.yml $MAIN_HOME/.
+
       cd $MAIN_HOME
       git clone https://github.com/kubernetes-sigs/kubespray.git
       
@@ -33,8 +33,11 @@ function make_fold()
     if [ ! -d $KUBEFLOW_HOME ]; then
       mkdir -p $KUBEFLOW_HOME
     fi
-
 }
+
+if [ ! -f $MAIN_HOME/hosts.yml ]; then
+   cp $HOME/hosts.yml $MAIN_HOME/.
+fi
 
 function k8s_install()
 { 
@@ -50,7 +53,6 @@ function k8s_install()
     pip install -r $KUBESPRAY_HOME/requirements.txt 
     
     cp -rfp $KUBESPRAY_HOME/inventory/sample $KUBESPRAY_HOME/inventory/prod 
-    pwd
     
     # master=172.02.11.182  node1=172.20.11.127
     declare -a IPS=($master $node1)
