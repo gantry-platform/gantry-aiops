@@ -55,3 +55,25 @@ $ vi inventory/kubeflow/all/all.yaml
 
 
 # kubeflow 설치 
+https://www.kubeflow.org/docs/started/k8s/kfctl-k8s-istio/ 
+
+##  download kfctl
+https://github.com/kubeflow/kfctl/releases/tag/v1.1.0
+$ tar –xvf kfctl_1.1.0
+
+## 환경 변수 생성
+$ vi setenv_kubeflow 
+```
+export PATH=$PATH:"<path-to-kfctl>”
+export KF_NAME=<your choice of name for the Kubeflow deployment>
+export BASE_DIR=<path to a base directory> export KF_DIR=${BASE_DIR}/${KF_NAME}         export CONFIG_URI=https://raw.githubusercontent.com/kubeflow/manifests/v1.1-branch/kfdef/kfctl_k8s_istio.v1.1.0.yaml
+ ```
+
+
+## deploy default 설정 
+$ vi deploy_kubeflow
+```
+mkdir -p ${KF_DIR} 
+cd ${KF_DIR}
+kfctl build -V -f ${CONFIG_URI}
+```
