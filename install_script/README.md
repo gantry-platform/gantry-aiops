@@ -31,7 +31,6 @@ $ sudo reboot now
 ### key 기반 인증을 사용할 수 있도록 SSH 구성    
 ```
 $ ssh-keygen –t rsa 
-$ ssh-copssh-keygen –ty-id inslab@[kubespray_master IP address] 
 $ ssh-copy-id inslab@[kubespray_node1 IP address]
 
 $ mkdir ~/kubeflow
