@@ -37,10 +37,10 @@ function make_fold()
       mkdir -p $KUBEFLOW_HOME
     fi
     
-    if [ ! -f $MAIN_HOME/hosts.yml ]; then
+    #if [ ! -f $MAIN_HOME/hosts.yml ]; then
       cp $now_fold/hosts.yml $MAIN_HOME/.
       echo "cp $now_fold/hosts.yml $MAIN_HOME/."
-    fi
+    #fi
 }
 
 
