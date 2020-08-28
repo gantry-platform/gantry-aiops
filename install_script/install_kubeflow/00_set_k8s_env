@@ -1,0 +1,10 @@
+
+# node taint
+kubectl taint nodes --all node-role.kubernetes.io/master-
+
+# dynamic volume provisioner 설치
+kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
+
+# default pvc 확인
+kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+
