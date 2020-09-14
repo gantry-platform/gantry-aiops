@@ -84,10 +84,7 @@ def cpu_data():
             list_cpu.append(item_cpu)
             #print(item_cpu)
             
-            
     ###print("======================")
-    #print(instance_list)
-    #print(cpu_value_list)
     #return (cnt_cpu, time_list, instance_list, cpu_value_list)
     return (list_cpu)
 
@@ -104,7 +101,6 @@ def memory_data():
     memory_value_list = []
     time_list = []
 
-    
     list_memory = []
     for item in memory_result['data']['result']:
         len_value = len(item['values'])
@@ -129,8 +125,6 @@ def merge_metric_data():
     list_cpu = cpu_data()
     list_memory = memory_data()
 
-    
-    # CPU instance
     df_cpu = pd.DataFrame(list_cpu)
     df_memory = pd.DataFrame(list_memory)
     
@@ -149,7 +143,7 @@ def merge_metric_data():
         temp_df_cpu = df_cpu[df_cpu.cpu_instance == key]
         temp_df_memory = df_memory[df_memory.memory_instance == key]
         temp_merge = pd.merge(temp_df_cpu, temp_df_memory, how='outer')
-
+        
         dict_result[key] = temp_merge
         merge_data = dict_result[key]
         merge_data.to_csv("./m_data_" + key + ".csv", mode='w')
