@@ -35,6 +35,7 @@ RUN apt-get update \
     locales \
     fonts-liberation \
     run-one \
+    curl \
  && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
@@ -142,7 +143,7 @@ COPY jupyter_notebook_config.py /etc/jupyter/
 # Fix permissions on /etc/jupyter as root
 USER root
 RUN fix-permissions /etc/jupyter/
-RUN echo "${NB_USER}    ALL=NOPASSWD:   ALL" >> /etc/sudoers
+RUN echo "${NB_USER}	ALL=NOPASSWD:	ALL" >> /etc/sudoers
 
 # Switch back to jovyan to avoid accidental container runs as root
 USER $NB_UID
@@ -151,6 +152,4 @@ WORKDIR $HOME
 
 ENTRYPOINT ["tini", "--"]
 CMD ["sh","-c", "jupyter notebook --notebook-dir=/home/${NB_USER} --ip=0.0.0.0 --no-browser --allow-root --port=8888 --NotebookApp.token='' --NotebookApp.password='' --NotebookApp.allow_origin='*' --NotebookApp.base_url=${NB_PREFIX}"]
-
-
 
