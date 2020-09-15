@@ -22,8 +22,7 @@
    "source": [
     "import requests\n",
     "import json\n",
-    "import time\n",
-    "import pandas as pd"
+    "import time"
    ]
   },
   {
@@ -54,23 +53,20 @@
    "outputs": [],
    "source": [
     "def convert_range_time():\n",
-    "    start_time = '2020-08-04T00:00:00Z'\n",
-    "    #end_time = '2020-08-27T23:59:59Z' \n",
+    "    start_time = '2020-08-01T00:00:00Z'\n",
+    "    #end_time = '2020-07-10T11:59:59Z' \n",
     "    \n",
     "    now = time.localtime()\n",
     "    current_date = \"%04d-%02d-%02d\" % (now.tm_year, now.tm_mon, now.tm_mday)\n",
     "    current_time = \"%02d:%02d:%02d\" % (now.tm_hour, now.tm_min, now.tm_sec)\n",
-    "    \n",
     "    current_d_t = current_d_t = current_date + 'T' + current_time + 'Z'\n",
     "    \n",
     "    step = '10m'\n",
     "    \n",
     "    c_start_time = time.strftime(\"%Y-%m-%dT%H:%M:%SZ\", time.gmtime(time.mktime(time.strptime(start_time, \"%Y-%m-%dT%H:%M:%SZ\"))))\n",
     "    #c_end_time = time.strftime(\"%Y-%m-%dT%H:%M:%SZ\", time.gmtime(time.mktime(time.strptime(end_time, \"%Y-%m-%dT%H:%M:%SZ\"))))\n",
-    "    \n",
     "    #start_end_step = '&start=' + c_start_time + '&end=' + c_end_time + '&step=' + step\n",
     "    start_end_step = '&start=' + c_start_time + '&end=' + current_d_t + '&step=' + step\n",
-    "    \n",
     "    return start_end_step"
    ]
   },
@@ -83,7 +79,7 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "&start=2020-08-04T00:00:00Z&end=2020-09-14T07:14:08Z&step=10m\n"
+      "&start=2020-08-01T00:00:00Z&end=2020-08-19T05:26:37Z&step=10m\n"
      ]
     }
    ],
@@ -100,7 +96,7 @@
     {
      "data": {
       "text/plain": [
-       "\"\\ncpu_query = 'instance:node_cpu:rate:sum'\\nquery_range = '&start=2020-08-04T00:00:00Z&end=2020-08-04T05:56:48Z&step=10m'\\nquery_structure = cpu_query + query_range\\nprint(query_structure)\\nprint(prom_query_range_url + query_structure)\\n\\nrr = call_data(prom_query_range_url, query_structure)\\nprint(rr)\\n\""
+       "\"\\ncpu_query = 'instance:node_cpu:rate:sum'\\nquery_range = '&start=2020-06-01T00:00:00Z&end=2020-07-04T05:56:48Z&step=10m'\\nquery_structure = cpu_query + query_range\\nprint(prom_query_range_url + query_structure)\\n\\nrr = call_data(prom_query_range_url, query_structure)\\nprint(rr)\\n\""
       ]
      },
      "execution_count": 6,
@@ -112,9 +108,8 @@
     "# web cur code for test\n",
     "'''\n",
     "cpu_query = 'instance:node_cpu:rate:sum'\n",
-    "query_range = '&start=2020-08-04T00:00:00Z&end=2020-08-04T05:56:48Z&step=10m'\n",
+    "query_range = '&start=2020-06-01T00:00:00Z&end=2020-07-04T05:56:48Z&step=10m'\n",
     "query_structure = cpu_query + query_range\n",
-    "print(query_structure)\n",
     "print(prom_query_range_url + query_structure)\n",
     "\n",
     "rr = call_data(prom_query_range_url, query_structure)\n",
@@ -137,36 +132,27 @@
     "    cpu_result = json.loads(cpu_r.text)\n",
     "    #print('result size=', len(cpu_result['data']['result'])) \n",
     "    ###print(\"===== CPU RESULT =====\")\n",
-    "    \n",
     "    instance_list = []\n",
     "    cpu_value_list = []\n",
     "    time_list = []\n",
-    "\n",
-    "    list_cpu = []\n",
+    "    global cnt \n",
+    "    cnt = 0\n",
     "    for item in cpu_result['data']['result']:\n",
     "        #print(item['metric']['instance'], item['values'])\n",
     "        #print('value size=', len(item['values']))\n",
     "        len_value = len(item['values'])\n",
     "        #for item2 in item['values']:\n",
     "        #    print('item2=', item2)\n",
-    "        \n",
     "        for i in range(len_value):\n",
     "            #print(item['metric']['instance'], i, item['values'][i])\n",
     "            time_list.append(item['values'][i][0])\n",
     "            instance_list.append(item['metric']['instance'])\n",
     "            cpu_value_list.append(item['values'][i][1])\n",
-    "\n",
-    "            #dict\n",
-    "            item_cpu = {'time': item['values'][i][0], 'cpu_instance':item['metric']['instance'], 'cpu_value':item['values'][i][1]}\n",
-    "            list_cpu.append(item_cpu)\n",
-    "            #print(item_cpu)\n",
-    "            \n",
-    "            \n",
+    "            cnt = cnt + 1\n",
     "    ###print(\"======================\")\n",
     "    #print(instance_list)\n",
     "    #print(cpu_value_list)\n",
-    "    #return (cnt_cpu, time_list, instance_list, cpu_value_list)\n",
-    "    return (list_cpu)"
+    "    return (cnt, time_list, instance_list, cpu_value_list)"
    ]
   },
   {
@@ -187,69 +173,48 @@
     "    instance_list = []\n",
     "    memory_value_list = []\n",
     "    time_list = []\n",
-    "\n",
-    "    \n",
-    "    list_memory = []\n",
     "    for item in memory_result['data']['result']:\n",
     "        len_value = len(item['values'])\n",
-    "\n",
     "        for i in range(len_value):\n",
     "            #print(item['metric']['instance'], i, item['values'][i])\n",
     "            time_list.append(item['values'][i][0])\n",
     "            instance_list.append(item['metric']['instance'])\n",
     "            memory_value_list.append(item['values'][i][1])\n",
-    "            \n",
-    "            # dict\n",
-    "            item_memory = {'time':item['values'][i][0], 'memory_instance':item['metric']['instance'], 'memory_value': item['values'][i][1]}\n",
-    "            list_memory.append(item_memory)\n",
-    "            \n",
     "    ###print(\"=========================\")\n",
-    "    #return (cnt_mem, time_list, instance_list, memory_value_list)\n",
-    "    return(list_memory)"
+    "    return (time_list, instance_list, memory_value_list)"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 9,
+   "execution_count": 13,
    "metadata": {},
    "outputs": [],
    "source": [
     "# Merge Data\n",
     "def merge_metric_data():\n",
-    "    list_cpu = cpu_data()\n",
-    "    list_memory = memory_data()\n",
-    "\n",
-    "    df_cpu = pd.DataFrame(list_cpu)\n",
-    "    df_memory = pd.DataFrame(list_memory)\n",
+    "    cnt, cpu_time, cpu_instance, cpu_value = cpu_data()\n",
+    "    memory_time, memory_instance, memory_value = memory_data()\n",
+    "    data = []\n",
     "    \n",
-    "    inst_cpu = df_cpu[\"cpu_instance\"].unique()\n",
-    "    inst_memory = df_memory[\"memory_instance\"].unique()\n",
-    "    \n",
-    "    inst = pd.concat([df_cpu['cpu_instance'], df_memory['memory_instance']]).unique()\n",
-    "    #print(inst)\n",
-    "    \n",
-    "    len_list_inst = len(inst)\n",
-    "    \n",
-    "    dict_result = {}\n",
-    "    for k in range(len_list_inst):\n",
-    "        key = inst[k]\n",
-    "        \n",
-    "        temp_df_cpu = df_cpu[df_cpu.cpu_instance == key]\n",
-    "        temp_df_memory = df_memory[df_memory.memory_instance == key]\n",
-    "        temp_merge = pd.merge(temp_df_cpu, temp_df_memory, how='outer')\n",
-    "\n",
-    "        dict_result[key] = temp_merge\n",
-    "        merge_data = dict_result[key]\n",
-    "        merge_data.to_csv(\"../cto_k8s/m_data_\" + key + \".csv\", mode='w')\n",
-    "    "
+    "    #print(\"count, \", \"CPU_TIME, \", \"MEMROY_TIME, \", \"CPU_INSANCE, \", \"MEMORY_INSTANCE, \", \"CPU_VALUE, \", \"MEMORY_VALUE\")\n",
+    "    header = \"date,time,cpu,memory\"\n",
+    "    f = open(\"../csv_data/m_data_fromNow.csv\", 'w')  # time, cpu\n",
+    "    f.write(header + \"\\n\")\n",
+    "    for i in range(cnt):\n",
+    "        if cpu_instance[i] == '10.11.1.80:9091':   ## 특정노드 데이터 추출 하드코딩 변경 필요\n",
+    "            #print(str(i).zfill(4), cpu_time[i], memory_time[i], cpu_instance[i], memory_instance[i], cpu_value[i], memory_value[i])\n",
+    "            #date_time = time.strftime(\"%Y-%m-%d %H:%M:%S\", time.localtime(int(cpu_time[i])))\n",
+    "            date_time = time.strftime(\"%Y-%m-%d,%H:%M:%S\", time.localtime(int(cpu_time[i])))\n",
+    "            m_data = str(date_time) + \",\" + str(cpu_value[i]) + \",\" + str(memory_value[i]) + '\\n'\n",
+    "            #data = str(date_time) + \",\" + str(cpu_value[i]) + \",\" + str(memory_value[i])  +  \"\\n\"\n",
+    "            f.write(m_data) \n",
+    "    f.close()"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 10,
-   "metadata": {
-    "scrolled": true
-   },
+   "execution_count": 14,
+   "metadata": {},
    "outputs": [
     {
      "name": "stdout",
